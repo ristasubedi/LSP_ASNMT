@@ -1,0 +1,269 @@
+Question 1) 
+
+a) Analyze the UserFitness class. Explain why this class has low cohesion. 
+
+Low Cohesion Explanation: The UserFitness class has low cohesion because it handles multiple responsibilities that are not directly related to each other. It manages user details (name, age, weight, height), workout tracking (steps, calories burned, workout type), and nutrition tracking (calories consumed, meals). These functionalities are distinct and should not be bundled together in a single class, as this makes the class more complex, harder to maintain, and less flexible for future changes. 
+
+b) Describe, in general, how you would split the UserFitness class into more cohesive classes. 
+
+General Splitting Approach: To increase cohesion, the UserFitness class could be divided into separate classes based on distinct responsibilities: 
+
+UserProfile: Manages user-related information like name, age, weight, and height. 
+
+WorkoutTracker: Tracks daily workouts, including steps taken, calories burned, and workout type. 
+
+NutritionTracker: Manages nutritional information, such as calories consumed and meals logged. 
+
+ 
+
+Question no. 2: 
+
+Should Student be a class, an abstract class or an interface? 
+
+Student should be in an abstract class rather than a regular class or an interface. It is so because: 
+
+a) It likely has some common attributes (e.g., name, ID, enrollmentDate) and behaviors (e.g., enroll, dropClass) that all students share, regardless of their year.  
+
+b) It may have some methods that are common to all students but implemented differently for each year (e.g., calculateTuition()).  
+
+c) It shouldn't be instantiated directly - we wouldn't have a generic "Student" without a specific year. 
+
+Also, an abstract class allows for both shared state (fields) and behavior (methods) among all subclasses, but also allows subclasses to implement their own specific behaviors. Since Student likely has common properties (like name, ID, etc.) and common methods that are shared across all students (such as methods for enrolling in courses or viewing grades), it makes sense to encapsulate these shared behaviors in an abstract class. 
+Additionally, each year of students (FirstYear, SecondYear, and ThirdYear) will have year-specific behaviors or states, which would require the use of inheritance. An abstract class enables you to provide common behavior for all students, while leaving room for specific implementation in the subclasses. 
+
+It should not be an interface as interfaces in Java are generally used when we want to specify only behavior (methods), without any common state (fields). Since students likely share some common attributes like name, id, or other fields, an abstract class is a better fit, as it can contain both fields and methods. 
+
+ In contrast, interfaces are more appropriate for defining contracts that are to be implemented by unrelated classes, not for shared properties and behaviors. 
+
+Why is the given method flawed? 
+
+The removeThirdYears method is flawed for several reasons: 
+
+a) Violation of the Liskov Substitution Principle: This method assumes that all Students in the list can be cast to ThirdYear, which is not true. This violates the Liskov Substitution Principle, one of Arthur Riel's heuristics, which states that objects of a superclass should be replaceable with objects of its subclasses without affecting the correctness of the program. 
+
+b) Incorrect use of casting: The method attempts to cast every Student to ThirdYear, which will throw a ClassCastException for FirstYear and SecondYear students. 
+
+c) Modifying a collection while iterating: The method removes elements from the list while iterating over it, which can lead to concurrent modification exceptions and unpredictable behavior. 
+
+d) Inefficient: It iterates through all students, even though it only needs to remove ThirdYear students. 
+
+To fix this, we can use an iterator explicitly, which allows safe removal of elements while iterating: 
+
+void removeThirdYears(List<Student> students) { 
+
+    Iterator<Student> iterator = students.iterator(); 
+
+    while (iterator.hasNext()) { 
+
+        Student student = iterator.next(); 
+
+        if (student instanceof ThirdYear) { 
+
+            iterator.remove();  // Safe removal using the iterator 
+
+        } 
+
+    } 
+
+} 
+
+ 
+
+Q No. 3) 
+
+Is BankAccount well-encapsulated? No, it is not well-encapsulated. 
+
+Encapsulation is a fundamental principle in object-oriented programming (OOP) that restricts direct access to some of an object's components, typically by making fields private and providing public methods to access or modify them. In the BankAccount class: 
+
+The fields are public: accountHolderName, accountNumber, balance, and interestRate are all declared as public. This means they can be accessed and modified directly from outside the class, breaking encapsulation. Ideally, fields should be marked private so they cannot be modified arbitrarily from outside the class. 
+
+Direct modification of fields: Since all the fields are public, any part of the program can change their values, potentially putting the account in an invalid or unintended state. 
+
+Suggested Changes: 
+
+Make Fields Private: Change field visibility from public to private. 
+
+Add Getters/Setters: Provide methods to access and modify fields safely. 
+
+Validation in Setters: Include checks to maintain valid states (e.g., no negative balances). 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Q No. 4) 
+
+a) Why the current structure does not support changing the trim level? 
+
+In the current design, the Car class has subclasses for each trim level (Base, Sports, Luxury). This suggests that the trim level is being modeled via inheritance. This approach has limitations: 
+
+Inflexibility: Once a Car object is created as a Base, Sports, or Luxury, we can't easily change its trim level. Inheritance tightly binds a car to its trim level at the time of instantiation. 
+
+Maintenance overhead: To change the trim level, we would need to replace the entire object with an instance of a different subclass, which is inefficient and error-prone. This violates the Single Responsibility Principle (each class should have one responsibility). 
+
+b) How to refactor the structure to allow dynamic trim level changes using composition? 
+
+A better design would be to use composition instead of inheritance for trim levels. This way, the Car class can contain a TrimLevel object that can be dynamically changed. The refactoring would involve: 
+
+Refactoring using composition includes: 
+
+Create a TrimLevel Interface: Define methods for trim level functionality. 
+
+Implement Concrete Classes: BaseTrim, SportsTrim, LuxuryTrim implement the interface. 
+
+Modify Car Class. 
+
+Use a TrimLevel instance as a member variable. 
+
+Add a method to set the trim level dynamically. 
+
+Dynamic Changes: Use setTrimLevel() to change the trim level at runtime. 
+
+ 
+
+Q NO. 5) 
+
+When we find two classes that share a large portion of their functionality but have some differences, this often indicates a design problem related to code duplication and poor separation of concerns. According to Arthur Riel's Object-Oriented Design Heuristics, this situation violates several principles that lead to maintainability and flexibility issues. Below is an explanation of why this is problematic and how to solve it using Riel’s design heuristics. 
+
+Why This is a Problem: 
+
+Code Duplication (Heuristic: Eliminate Redundant Code) 
+
+If two classes contain the same or nearly the same code, this leads to code duplication, which is one of the main sources of bugs and inefficiencies. Duplicating code makes the system harder to maintain because any change or bug fix in one class would have to be replicated in the other. If you forget to make a change in both places, the two classes can become inconsistent, leading to errors that are difficult to trace. 
+
+Violation of Single Responsibility Principle (SRP) 
+
+If the classes share most of their functionality, they are likely handling more than one responsibility, which violates the single responsibility principle. This can make the code harder to understand and maintain, as each class is doing more than it should. 
+
+Increased Complexity (Heuristic: Keep Classes Focused) 
+
+When classes contain similar code but are differentiated by small portions of unique code, it leads to an increase in system complexity. This violates the heuristic that advises keeping classes focused on a single responsibility or task. By doing too much, these classes become harder to manage and understand, reducing readability and flexibility. 
+
+Difficult to Extend or Modify 
+
+As more functionality is added, maintaining and extending the two classes becomes increasingly difficult. Changes in one class would necessitate careful examination of the other, increasing the risk of unintended side effects. This makes the system fragile and more prone to errors. 
+
+How to Solve the Problem: 
+
+Arthur Riel’s heuristics provide guidance on how to refactor this design issue: 
+
+Extract Common Functionality into a Superclass or Use Composition (Heuristic: Prefer Composition Over Inheritance) 
+
+One way to eliminate the code duplication and maintain consistency is to refactor the shared functionality into a common superclass or use composition. 
+
+If there is a clear "is-a" relationship between the classes, then inheritance could be appropriate. In this case, you would create a common superclass that encapsulates the shared behavior, and both classes would inherit from it. This way, the shared code resides in one place, making it easier to maintain. 
+
+If inheritance doesn’t fit well, consider composition instead. You could move the common functionality into a separate helper class or component, and both original classes can use that class to handle the shared functionality. This adheres to the heuristic that composition should be preferred over inheritance when possible, because it provides more flexibility and avoids tightly coupling classes. 
+
+Use Interfaces or Abstract Classes for Variation (Heuristic: Use Abstract Classes for Common Behavior) 
+
+If the differences between the two classes represent different behaviors, consider using an interface or abstract class to define the common functionality and then have the two classes implement or extend them as needed. This keeps the design flexible and future-proof by isolating the common behavior while allowing subclasses to vary where necessary. 
+
+The interface or abstract class should define the common behaviors that both classes share, while each subclass (or class that implements the interface) handles the specific behaviors. 
+
+Favor Delegation for Custom Behavior (Heuristic: Keep Inheritance Hierarchies Shallow) 
+
+If the unique parts of the two classes are small and represent distinct behaviors, consider delegating those specific behaviors to helper objects. By moving the distinct functionality into separate classes or methods that are used by the main class, you avoid deep inheritance hierarchies and maintain flexibility. 
+
+This approach allows you to encapsulate varying behavior in smaller, more focused classes, which can be swapped or extended as needed. It also prevents large inheritance trees, which violate the heuristic that encourages shallow hierarchies for easier management and understanding. 
+
+Apply the DRY Principle (Don’t Repeat Yourself) 
+
+According to Riel's heuristic on redundancy, eliminate redundant code by ensuring that any functionality shared by multiple classes is defined in a single place. This ensures that when a change is required, it only needs to be made in one location, reducing the likelihood of inconsistencies and errors. 
+
+ 
+
+Q NO. 6) 
+
+Embedding database calls in classes like Car and BankAccount is unwise due to the following reasons: 
+
+Violation of Single Responsibility Principle (SRP): Classes take on both business logic and database responsibilities, making them harder to manage. 
+
+High Coupling: Tightly couples business logic with the persistence layer, making future changes to the database more difficult. 
+
+Reduced Testability: Harder to test business logic independently due to embedded database dependencies. 
+
+Violation of Separation of Concerns: Blurs the boundary between business logic and data persistence, making code harder to maintain. 
+
+Scalability Issues: Embedding persistence logic hinders flexibility when handling different storage mechanisms. 
+
+Code Duplication: Leads to redundant database logic across classes, increasing maintenance overhead. 
+
+For the solution we can: Use a separate data access layer (e.g., Repository or DAO pattern) to manage database operations. 
+
+ 
+
+ 
+
+QNO. 7) 
+
+To determine when it's appropriate to create a new class hierarchy using inheritance, we need to consider several key conditions.Conditions for creating a new class hierarchy using inheritance: 
+
+ "Is-a" Relationship: 
+
+   - The most fundamental condition is that there must be a clear "is-a" relationship between the proposed superclass and subclasses. 
+
+   - Example: A Car "is-a" Vehicle, a Dog "is-an" Animal. 
+
+Common Attributes and Behaviors: 
+
+   - There should be significant shared attributes and behaviors among the proposed subclasses that can be abstracted into a superclass. 
+
+   - These common elements should represent a meaningful abstraction. 
+
+Specialization: 
+
+   - Subclasses should specialize or extend the behavior of the superclass in some way. 
+
+   - They should add new attributes or methods, or override existing ones with more specific implementations. 
+
+Liskov Substitution Principle (LSP): 
+
+   - The proposed hierarchy should adhere to the LSP, meaning that objects of the superclass should be replaceable with objects of its subclasses without affecting the correctness of the program. 
+
+Open/Closed Principle: 
+
+   - The design should be open for extension (through subclassing) but closed for modification of the superclass. 
+
+Reusability: 
+
+   - The inheritance hierarchy should promote code reuse, reducing duplication across related classes. 
+
+ Abstraction Level: 
+
+   - The superclass should represent an appropriate level of abstraction that is neither too general nor too specific. 
+
+ 
+
+ Single Responsibility Principle: 
+
+    - Each class in the hierarchy should have a single, well-defined responsibility. 
+
+When these conditions are met, creating a new class hierarchy using inheritance can lead to a clean, maintainable, and extensible design.  
+
+Question number8 
+
+Inheritance and composition are two fundamental concepts in object-oriented programming, both used to model relationships between classes. The difference between inheritance and composition: 
+
+Inheritance is a mechanism where one class (the child or subclass) inherits fields and methods from another class (the parent or superclass). The child class can also override or extend the behavior of the parent class. Composition is a design principle where one class is composed of one or more objects of other classes, meaning it uses their functionality rather than inheriting it.  
+
+ Inheritance is appropriate when there is a clear "is-a" relationship. For example, a Dog is an Animal, so inheritance makes sense. It allows code reuse by inheriting functionality from a base class. Composition is preferred when there is a "has-a" relationship. For instance, a Car has an Engine, but a Car is not an Engine.  
+
+Composition can be slightly more complex than inheritance, as we need to manage the relationships between objects. 
+
+Composition often provides a more maintainable and flexible solution, especially when building complex systems that may evolve over time. 
+
+ 
+
+Q NO. 9) 
+
+Cohesion refers to how closely related the functions and responsibilities of a module, such as a class or method, are.  
+High cohesion means that all elements within a module work together to achieve a single, well-defined purpose, while low cohesion indicates that a module handles a variety of unrelated tasks.  
+
+High cohesion is generally considered better because it leads to more maintainable, readable, and testable code. When a class or method is highly cohesive, it focuses on one responsibility, making it easier to modify, understand, and reuse. In contrast, low cohesion can make a module difficult to work with, as changes to one part of the code might affect unrelated functions, increasing complexity and reducing reusability. Therefore, designing systems with high cohesion promotes modularity and better separation of concerns, making the system easier to maintain and extend over time. 
+
+ 
